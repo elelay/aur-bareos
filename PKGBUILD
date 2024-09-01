@@ -57,13 +57,19 @@ source=("git+https://github.com/bareos/bareos.git#tag=Release/${pkgver}"
         "0001-distver.patch"
         "0003-version.patch"
         "0004-sqlspam.patch"
-        "0005-httpd.patch")
+        "0005-httpd.patch"
+        "0008-fix-fmt-dangling-ref.patch"
+        "90e8716b9e5288eef6b6e76d9ccc7c9fed2e9230.patch"
+        "fec23f2fdb324ed957259315e291882cd4906dde.patch")
 
 md5sums=('SKIP'
          '419b0c64af750aa3e8ea668edf464d3e'
          '5bf1233d94dfecc9060746bfb39b9d2b'
          'ca4c929a2462cafaead8d0b49e3cebed'
          'a6a260808e46c20b1c22aa2efebc3fe1'
+         '13b4425741c48d73146b227fb934425f'
+         '5387ee9004276c852a63108ddc89abfc'
+         'fe115c246ca22c8e21fefb30f123d978'
          )
 
 python3_ver=$(python -c "from sys import version_info; print(\"%d.%d\" % (version_info[0],version_info[1]))");#"

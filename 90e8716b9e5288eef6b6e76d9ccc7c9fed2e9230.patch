@@ -1,0 +1,74 @@
+From 90e8716b9e5288eef6b6e76d9ccc7c9fed2e9230 Mon Sep 17 00:00:00 2001
+From: Christopher Fore <csfore@posteo.net>
+Date: Sat, 27 Jan 2024 11:03:06 -0500
+Subject: [PATCH] core: Fix compile errors on GCC 14
+
+Starting in GCC 14, it will no longer include <algorithm> by default,
+resulting in compile errors for various projects.
+
+https://gcc.gnu.org/gcc-14/porting_to.html
+
+Errors:
+
+core/src/cats/sql_get.cc:1309:42: error: cannot convert
+'std::vector<std::__cxx11::basic_string<char> >::iterator' to
+`const char*'
+
+  1309 | jobids.erase(std::remove(jobids.begin(), jobids.end(),
+    remove_jobid),
+
+core/src/stored/append.cc:78:3: error: `for_each' was not declared in
+this scope
+
+ 78 |   for_each(attributes_.begin(), attributes_.end(),
+
+core/src/dird/ua_prune.cc:897:27: error: `remove_if' is not a member
+of `std'; did you mean `remove_cv'?
+
+  897 |     prune_list.erase(std::remove_if(prune_list.begin(),
+     prune_list.end(),
+
+Signed-off-by: Christopher Fore <csfore@posteo.net>
+---
+ core/src/cats/sql_get.cc  | 1 +
+ core/src/dird/ua_prune.cc | 2 ++
+ core/src/stored/append.cc | 1 +
+ 3 files changed, 4 insertions(+)
+
+diff --git a/core/src/cats/sql_get.cc b/core/src/cats/sql_get.cc
+index 21a1a326795..3ed34a44ba5 100644
+--- core/src/cats/sql_get.cc.old
++++ core/src/cats/sql_get.cc
+@@ -31,6 +31,7 @@
+  */
+ 
+ #include "include/bareos.h"
++#include <algorithm>
+ 
+ #if HAVE_POSTGRESQL
+ 
+diff --git a/core/src/dird/ua_prune.cc b/core/src/dird/ua_prune.cc
+index 81ab01450ec..eda70f33bb5 100644
+--- core/src/dird/ua_prune.cc.old
++++ core/src/dird/ua_prune.cc
+@@ -40,6 +40,8 @@
+ #include "lib/edit.h"
+ #include "lib/parse_conf.h"
+ 
++#include <algorithm>
++
+ namespace directordaemon {
+ 
+ /* Forward referenced functions */
+diff --git a/core/src/stored/append.cc b/core/src/stored/append.cc
+index 6fa9cb24f31..8f1cf8070b0 100644
+--- core/src/stored/append.cc.old
++++ core/src/stored/append.cc
+@@ -42,6 +42,7 @@
+ #include "lib/berrno.h"
+ #include "lib/crypto.h"
+ 
++#include <algorithm>
+ #include <thread>
+ #include <variant>
+ #include <deque>
