@@ -1,0 +1,58 @@
+Fix gcc14 compilation. Here is the error, for the record:
+In file included from devel/ArchLinux/bareos/src/bareos/third-party/fmt/include/fmt/format.h:48,
+                 from devel/ArchLinux/bareos/src/bareos/core/src/stored/device_resource.cc:27:
+devel/ArchLinux/bareos/src/bareos/third-party/fmt/include/fmt/core.h: In instantiation of 'constexpr fmt::v9::detail::value<Context> fmt::v9::detail::make_value(T&&) [with Context = fmt::v9::basic_format_context<fmt::v9::appender, char>; T = fmt::v9::basic_string_view<char>&]':
+devel/ArchLinux/bareos/src/bareos/third-party/fmt/include/fmt/core.h:1777:29:   required from 'constexpr fmt::v9::format_arg_store<Context, Args>::format_arg_store(T&& ...) [with T = {fmt::v9::basic_string_view<char>&, const char (&)[3]}; Context = fmt::v9::basic_format_context<fmt::v9::appender, char>; Args = {fmt::v9::basic_string_view<char>, char [3]}]'
+ 1777 |   return make_value<Context>(val);
+      |          ~~~~~~~~~~~~~~~~~~~^~~~~
+devel/ArchLinux/bareos/src/bareos/third-party/fmt/include/fmt/core.h:1918:31:   required from 'constexpr fmt::v9::format_arg_store<Context, typename std::remove_cv<typename std::remove_reference<Args>::type>::type ...> fmt::v9::make_format_args(Args&& ...) [with Context = basic_format_context<appender, char>; Args = {basic_string_view<char>&, const char (&)[3]}]'
+ 1918 |   return {FMT_FORWARD(args)...};
+      |                               ^
+devel/ArchLinux/bareos/src/bareos/third-party/fmt/include/fmt/core.h:3235:52:   required from 'OutputIt fmt::v9::format_to(OutputIt, format_string<T ...>, T&& ...) [with OutputIt = appender; T = {basic_string_view<char>&, const char (&)[3]}; typename std::enable_if<detail::is_output_iterator<OutputIt, char>::value, int>::type <anonymous> = 0; format_string<T ...> = basic_format_string<char, basic_string_view<char>&, const char (&)[3]>]'
+ 3235 |   return vformat_to(out, fmt, fmt::make_format_args(args...));
+      |                               ~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~
+devel/ArchLinux/bareos/src/bareos/third-party/fmt/include/fmt/format-inl.h:65:14:   required from here
+   65 |     format_to(it, FMT_STRING("{}{}"), message, SEP);
+      |     ~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+devel/ArchLinux/bareos/src/bareos/third-party/fmt/include/fmt/core.h:1901:77:   in 'constexpr' expansion of 'fmt::v9::detail::make_arg<true, fmt::v9::basic_format_context<fmt::v9::appender, char>, fmt::v9::detail::type::string_type, fmt::v9::basic_string_view<char>&>((* & args#0))'
+devel/ArchLinux/bareos/src/bareos/third-party/fmt/include/fmt/core.h:1735:15: error: possibly dangling reference to a temporary [-Werror=dangling-reference]
+ 1735 |   const auto& arg = arg_mapper<Context>().map(FMT_FORWARD(val));
+      |               ^~~
+devel/ArchLinux/bareos/src/bareos/third-party/fmt/include/fmt/core.h:1735:46: note: the temporary was destroyed at the end of the full expression 'fmt::v9::detail::arg_mapper<fmt::v9::basic_format_context<fmt::v9::appender, char> >().fmt::v9::detail::arg_mapper<fmt::v9::basic_format_context<fmt::v9::appender, char> >::map<fmt::v9::basic_string_view<char> >((*(const fmt::v9::basic_string_view<char>*)(& val)))'
+ 1735 |   const auto& arg = arg_mapper<Context>().map(FMT_FORWARD(val));
+      |                     ~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~
+devel/ArchLinux/bareos/src/bareos/third-party/fmt/include/fmt/core.h: In instantiation of 'constexpr fmt::v9::detail::value<Context> fmt::v9::detail::make_value(T&&) [with Context = fmt::v9::basic_format_context<fmt::v9::appender, char>; T = std::basic_string_view<char>&]':
+devel/ArchLinux/bareos/src/bareos/third-party/fmt/include/fmt/core.h:1777:29:   required from 'constexpr fmt::v9::format_arg_store<Context, Args>::format_arg_store(T&& ...) [with T = {std::basic_string_view<char, std::char_traits<char> >&}; Context = fmt::v9::basic_format_context<fmt::v9::appender, char>; Args = {std::basic_string_view<char, std::char_traits<char> >}]'
+ 1777 |   return make_value<Context>(val);
+      |          ~~~~~~~~~~~~~~~~~~~^~~~~
+devel/ArchLinux/bareos/src/bareos/third-party/fmt/include/fmt/core.h:1918:31:   required from 'constexpr fmt::v9::format_arg_store<Context, typename std::remove_cv<typename std::remove_reference<Args>::type>::type ...> fmt::v9::make_format_args(Args&& ...) [with Context = basic_format_context<appender, char>; Args = {std::basic_string_view<char, std::char_traits<char> >&}]'
+ 1918 |   return {FMT_FORWARD(args)...};
+      |                               ^
+devel/ArchLinux/bareos/src/bareos/third-party/fmt/include/fmt/core.h:3206:44:   required from 'std::string fmt::v9::format(format_string<T ...>, T&& ...) [with T = {std::basic_string_view<char, std::char_traits<char> >&}; std::string = std::__cxx11::basic_string<char>; format_string<T ...> = basic_format_string<char, std::basic_string_view<char, std::char_traits<char> >&>]'
+ 3206 |   return vformat(fmt, fmt::make_format_args(args...));
+      |                       ~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~
+devel/ArchLinux/bareos/src/bareos/core/src/stored/device_resource.cc:237:20:   required from here
+  237 |         fmt::format(FMT_STRING("Device {:s}: unlimited (0) 'Maximum Concurrent "
+      |         ~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  238 |                                "Jobs' reduces the restore peformance."),
+      |                                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  239 |                     name));
+      |                     ~~~~~
+devel/ArchLinux/bareos/src/bareos/third-party/fmt/include/fmt/core.h:1901:77:   in 'constexpr' expansion of 'fmt::v9::detail::make_arg<true, fmt::v9::basic_format_context<fmt::v9::appender, char>, fmt::v9::detail::type::string_type, std::basic_string_view<char>&>((* & args#0))'
+devel/ArchLinux/bareos/src/bareos/third-party/fmt/include/fmt/core.h:1735:15: error: possibly dangling reference to a temporary [-Werror=dangling-reference]
+ 1735 |   const auto& arg = arg_mapper<Context>().map(FMT_FORWARD(val));
+      |               ^~~
+devel/ArchLinux/bareos/src/bareos/third-party/fmt/include/fmt/core.h:1735:46: note: the temporary was destroyed at the end of the full expression 'fmt::v9::detail::arg_mapper<fmt::v9::basic_format_context<fmt::v9::appender, char> >().fmt::v9::detail::arg_mapper<fmt::v9::basic_format_context<fmt::v9::appender, char> >::map<std::basic_string_view<char> >((*(const std::basic_string_view<char>*)(& val)))'
+ 1735 |   const auto& arg = arg_mapper<Context>().map(FMT_FORWARD(val));
+      |                     ~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~
+--- core/CMakeLists.txt.old	2024-08-31 16:09:45.767055049 +0200
++++ core/CMakeLists.txt	2024-08-31 16:09:48.993721708 +0200
+@@ -389,7 +389,7 @@
+ include(FindIntl)
+ 
+ set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Werror -Wall -Wextra")
+-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Werror -Wall -Wextra")
++set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Werror -Wall -Wextra -Wno-dangling-reference")
+ 
+ include(BareosSetVariableDefaults)
+ option(ENABLE_BCONSOLE "Build bconsole binary" ON)

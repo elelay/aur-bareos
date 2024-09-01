@@ -1,0 +1,11 @@
+--- /home/elelay/devel/ArchLinux/bareos/src/bareos/core/src/tests/addresses_and_ports_config.cc.old	2024-09-01 13:37:34.873569470 +0200
++++ /home/elelay/devel/ArchLinux/bareos/src/bareos/core/src/tests/addresses_and_ports_config.cc	2024-09-01 13:29:27.203570430 +0200
+@@ -18,7 +18,7 @@
+    Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+    02110-1301, USA.
+ */
+-
++#include <algorithm>
+ #include "testing_dir_common.h"
+ 
+ #include "dird/socket_server.h"

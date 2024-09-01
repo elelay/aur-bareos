@@ -1,0 +1,30 @@
+From fec23f2fdb324ed957259315e291882cd4906dde Mon Sep 17 00:00:00 2001
+From: Andreas Rogge <andreas.rogge@bareos.com>
+Date: Tue, 13 Feb 2024 13:14:37 +0100
+Subject: [PATCH] core: Fix compile errors on GCC 14 for tests, too
+
+---
+ core/src/tests/addresses_and_ports_config.cc | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/core/src/tests/addresses_and_ports_config.cc b/core/src/tests/addresses_and_ports_config.cc
+index 8e927d45bb5..b25d31d6962 100644
+--- core/src/tests/addresses_and_ports_config.cc.old
++++ core/src/tests/addresses_and_ports_config.cc
+@@ -1,7 +1,7 @@
+ /*
+    BAREOS® - Backup Archiving REcovery Open Sourced
+ 
+-   Copyright (C) 2018-2023 Bareos GmbH & Co. KG
++   Copyright (C) 2018-2024 Bareos GmbH & Co. KG
+ 
+    This program is Free Software; you can redistribute it and/or
+    modify it under the terms of version three of the GNU Affero General Public
+@@ -25,6 +25,7 @@
+ #include "lib/address_conf.h"
+ #include "lib/watchdog.h"
+ #include "lib/berrno.h"
++#include <algorithm>
+ 
+ static bool create_and_bind_v4socket(int test_fd, int port)
+ {
